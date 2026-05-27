@@ -3,10 +3,14 @@ import requests
 import pandas as pd
 from dotenv import load_dotenv
 from typing import Optional
+import streamlit as st
 
 load_dotenv()
 
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+if not TMDB_API_KEY:
+    TMDB_API_KEY = st.secrets.get("TMDB_API_KEY", None)
+
 BASE_URL = "https://api.themoviedb.org/3"
 IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
