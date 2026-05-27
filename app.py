@@ -258,9 +258,8 @@ def make_color_square(color):
         return ""
 
     return (
-        f'<div style="display:flex; align-items:center; gap:8px;">'
-        f'<div style="width:18px; height:18px; background-color:{color}; '
-        f'border:1px solid #999; border-radius:4px;"></div>'
+        f'<div class="color-cell">'
+        f'<div class="color-box" style="background-color:{color};"></div>'
         f'<span>{color}</span>'
         f'</div>'
     )
@@ -275,12 +274,12 @@ def make_palette_squares(colors):
     for color in colors:
         if isinstance(color, str) and color.startswith("#"):
             squares += (
-                f'<div title="{color}" style="width:16px; height:16px; '
-                f'background-color:{color}; border:1px solid #999; '
-                f'border-radius:3px;"></div>'
+                f'<div class="palette-box" '
+                f'title="{color}" '
+                f'style="background-color:{color};"></div>'
             )
 
-    return f'<div style="display:flex; align-items:center; gap:4px;">{squares}</div>'
+    return f'<div class="palette-cell">{squares}</div>'
 
 
 html_df = table_df[
@@ -316,36 +315,101 @@ table_html = html_df.to_html(
     escape=False,
     index=False,
     border=0,
+    classes="color-result-table",
 )
 
-st.markdown(
-    f"""
-    <style>
-    table {{
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-    }}
-    th {{
-        background-color: #f5f5f5;
-        text-align: left;
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
-    }}
-    td {{
-        padding: 8px;
-        border-bottom: 1px solid #eee;
-        vertical-align: middle;
-    }}
-    </style>
+full_html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {{
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    font-family: Arial, sans-serif;
+}}
 
-    <div style="overflow-x:auto;">
-        {table_html}
-    </div>
-    """,
-    unsafe_allow_html=True,
+.table-wrapper {{
+    width: 100%;
+    overflow-x: auto;
+}}
+
+.color-result-table {{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: #f5f5f5;
+}}
+
+.color-result-table th {{
+    background-color: #262b33;
+    color: #ffffff;
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #444;
+    white-space: nowrap;
+}}
+
+.color-result-table td {{
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    vertical-align: middle;
+}}
+
+.color-result-table tr:nth-child(even) {{
+    background-color: #161a20;
+}}
+
+.color-result-table tr:nth-child(odd) {{
+    background-color: #101318;
+}}
+
+.color-cell {{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}}
+
+.color-box {{
+    width: 22px;
+    height: 22px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    flex-shrink: 0;
+}}
+
+.palette-cell {{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 120px;
+}}
+
+.palette-box {{
+    width: 20px;
+    height: 20px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    flex-shrink: 0;
+}}
+</style>
+</head>
+
+<body>
+<div class="table-wrapper">
+{table_html}
+</div>
+</body>
+</html>
+"""
+
+components.html(
+    full_html,
+    height=600,
+    scrolling=True,
 )
-
 
 # -----------------------------
 # Charts
