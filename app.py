@@ -254,42 +254,87 @@ table_df["color_palette"] = table_df["dominant_colors"].apply(
     lambda colors: " / ".join(colors) if isinstance(colors, list) else ""
 )
 
-result_table = table_df[
+
+def make_color_square(color):
+    if not isinstance(color, str) or not color.startswith("#"):
+        return ""
+
+    return f"""
+    <div style="display:flex; align-items:center; gap:8px;">
+        <div style="
+            width:18px;
+            height:18px;
+            background-color:{color};
+            border:1px solid #999;
+            border-radius:4px;">
+        </div>
+        <span>{color}</span>
+    </div>
+    """
+
+
+def make_palette_squares(colors):
+    if not isinstance(colors, list) or len(colors) == 0:
+        return ""
+
+    html = '<div style="display:flex; align-items:center; gap:4px;">'
+
+    for color in colors:
+        html += f"""
+        <div title="{color}" style="
+            width:16px;
+            height:16px;
+            background-color:{color};
+            border:1px solid #999;
+            border-radius:3px;">
+        </div>
+        """
+
+    html += "</div>"
+    return html
+
+
+html_df = table_df[
     [
         "title",
         "genres",
         "year",
         "rating",
         "dominant_color",
-        "color_palette",
+        "dominant_colors",
         "brightness",
         "saturation",
     ]
-]
+].copy()
 
+html_df["dominant_color"] = html_df["dominant_color"].apply(make_color_square)
+html_df["dominant_colors"] = html_df["dominant_colors"].apply(make_palette_squares)
 
-def color_square_style(value):
-    """
-    dominant_color 컬럼의 배경색을 실제 색상으로 표시.
-    """
-    if isinstance(value, str) and value.startswith("#"):
-        return (
-            f"background-color: {value}; "
-            "color: white; "
-            "font-weight: bold; "
-            "text-align: center;"
-        )
-    return ""
-
-
-styled_result_table = result_table.style.apply(
-    color_square_style,
-    subset=["dominant_color"],
+html_df = html_df.rename(
+    columns={
+        "title": "Title",
+        "genres": "Genres",
+        "year": "Year",
+        "rating": "Rating",
+        "dominant_color": "Dominant Color",
+        "dominant_colors": "Color Palette",
+        "brightness": "Brightness",
+        "saturation": "Saturation",
+    }
 )
 
-st.dataframe(
-    styled_result_table,
-    use_container_width=True,
+table_html = html_df.to_html(
+    escape=False,
+    index=False,
+)
+
+st.markdown(
+    f"""
+    <div style="overflow-x:auto;">
+        {table_html}
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
 
