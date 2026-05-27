@@ -250,48 +250,35 @@ st.subheader("Analysis Result Table")
 
 table_df = analysis_df.copy()
 
-table_df["color_palette"] = table_df["dominant_colors"].apply(
-    lambda colors: " / ".join(colors) if isinstance(colors, list) else ""
-)
-
 
 def make_color_square(color):
     if not isinstance(color, str) or not color.startswith("#"):
         return ""
 
-    return f"""
-    <div style="display:flex; align-items:center; gap:8px;">
-        <div style="
-            width:18px;
-            height:18px;
-            background-color:{color};
-            border:1px solid #999;
-            border-radius:4px;">
-        </div>
-        <span>{color}</span>
-    </div>
-    """
+    return (
+        f'<div style="display:flex; align-items:center; gap:8px;">'
+        f'<div style="width:18px; height:18px; background-color:{color}; '
+        f'border:1px solid #999; border-radius:4px;"></div>'
+        f'<span>{color}</span>'
+        f'</div>'
+    )
 
 
 def make_palette_squares(colors):
     if not isinstance(colors, list) or len(colors) == 0:
         return ""
 
-    html = '<div style="display:flex; align-items:center; gap:4px;">'
+    squares = ""
 
     for color in colors:
-        html += f"""
-        <div title="{color}" style="
-            width:16px;
-            height:16px;
-            background-color:{color};
-            border:1px solid #999;
-            border-radius:3px;">
-        </div>
-        """
+        if isinstance(color, str) and color.startswith("#"):
+            squares += (
+                f'<div title="{color}" style="width:16px; height:16px; '
+                f'background-color:{color}; border:1px solid #999; '
+                f'border-radius:3px;"></div>'
+            )
 
-    html += "</div>"
-    return html
+    return f'<div style="display:flex; align-items:center; gap:4px;">{squares}</div>'
 
 
 html_df = table_df[
@@ -326,10 +313,30 @@ html_df = html_df.rename(
 table_html = html_df.to_html(
     escape=False,
     index=False,
+    border=0,
 )
 
 st.markdown(
     f"""
+    <style>
+    table {{
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }}
+    th {{
+        background-color: #f5f5f5;
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }}
+    td {{
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }}
+    </style>
+
     <div style="overflow-x:auto;">
         {table_html}
     </div>
