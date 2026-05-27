@@ -9,6 +9,8 @@ from src.tmdb_api import (
 from src.poster_fetcher import load_image_from_url
 from src.color_analysis import analyze_poster
 
+import streamlit.components.v1 as components
+
 
 st.set_page_config(
     page_title="Movie Poster Color Palette Dashboard",
