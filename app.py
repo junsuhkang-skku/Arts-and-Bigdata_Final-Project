@@ -282,7 +282,7 @@ def color_square_style(value):
     return ""
 
 
-styled_result_table = result_table.style.applymap(
+styled_result_table = result_table.style.apply(
     color_square_style,
     subset=["dominant_color"],
 )
