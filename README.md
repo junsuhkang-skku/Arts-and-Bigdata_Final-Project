@@ -11,7 +11,7 @@ The project collects movie metadata and poster images, then analyzes visual feat
 Add your deployed Streamlit link here:
 
 ```text
-https://your-streamlit-app-url.streamlit.app
+https://arts-and-bigdatafinal-project-mkmonsquvpypomj99merex.streamlit.app
 ```
 
 ## Main Concept
